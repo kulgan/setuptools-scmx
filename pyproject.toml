@@ -48,6 +48,8 @@ local_scheme = "node-and-date"
 target-version = "py311"
 line-length = 120
 src = [ "src", "tests" ]
+
+# ruff linting rules
 [tool.ruff.lint]
 select = [
   "E",   # pydocstyle errors
@@ -117,6 +119,7 @@ commands = [
 ]
 
 [tool.setuptools-scmx]
+env-scheme = "github"
 scheme = "branch-scheme"
 
 # scmx branch scheme config
@@ -125,3 +128,7 @@ labels = [
   { name = "rc", branches = [ "master", "main" ] },
   { name = "post", branches = [ "hotfix" ] },
 ]
+
+# scmx github env scheme
+[tool.setuptools-scmx.env-schemes]
+github = { version = "GITHUB_HASH" }
