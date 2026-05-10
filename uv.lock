@@ -175,15 +175,15 @@ wheels = [
 
 [[package]]
 name = "pyprojectr"
-version = "0.1.1"
+version = "0.1.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
     { name = "cattrs" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e0/e5/651732221d9d16ff10a2a852c20392e9a506723e7bff3a4e6679fd25aa3b/pyprojectr-0.1.1.tar.gz", hash = "sha256:da2f3278a19aefbc75ac722da8e1795d685630b39f64c99f882e9c6e5940c321", size = 11289, upload-time = "2026-05-09T04:54:54.501Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b1/62/8c6e967dfcdb8251e8ab5c6682c490bcf28b48c1c66fcfe9bc16a2bcbf52/pyprojectr-0.1.2.tar.gz", hash = "sha256:bf531ef40745bb430f225990f8247c3857c6c60d26054b1fb9d5c9703d363161", size = 12131, upload-time = "2026-05-10T05:58:25.401Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b0/71/5730763e26079351ff7efc5032be6eb3ccd0dead4a5974a59ffc7a121acd/pyprojectr-0.1.1-py3-none-any.whl", hash = "sha256:cb836fde0d15880ebd46804fcba91bc7a6b17243c562bbce7c6ccaa5f8f97626", size = 6190, upload-time = "2026-05-09T04:54:53.38Z" },
+    { url = "https://files.pythonhosted.org/packages/8c/28/def1eaaf016388c91b9417e3de947b55914e9a56ca1d3f21aa85a29e3800/pyprojectr-0.1.2-py3-none-any.whl", hash = "sha256:48da88c372111a5d5eb43dc16d478cf540194bec8462ed14f6519ea36ea51304", size = 6218, upload-time = "2026-05-10T05:58:24.525Z" },
 ]
 
 [[package]]
@@ -258,15 +258,15 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "attrs" },
-    { name = "cattrs", specifier = ">=26.1.0" },
-    { name = "pyprojectr", specifier = ">=0.1.0" },
+    { name = "cattrs", specifier = ">=26.1" },
+    { name = "pyprojectr", specifier = ">=0.1" },
     { name = "setuptools-scm", extras = ["toml"] },
 ]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "pytest", specifier = ">=9.0.2" },
-    { name = "pytest-cov", specifier = ">=7.1.0" },
+    { name = "pytest-cov", specifier = ">=7.1" },
 ]
 
 [[package]]
