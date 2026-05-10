@@ -42,12 +42,14 @@ where = [ "src" ]
 namespaces = false
 
 [tool.setuptools_scm]
-local_scheme = "node-and-date"
+local_scheme = "no-local-version"
 
 [tool.ruff]
 target-version = "py311"
 line-length = 120
 src = [ "src", "tests" ]
+
+# ruff linting rules
 [tool.ruff.lint]
 select = [
   "E",   # pydocstyle errors
@@ -65,7 +67,7 @@ collapse_tables = [ "project.authors" ]
 
 [tool.pytest]
 minversion = "9.0"
-addopts = [ "-rfE", "--color=yes", "--cov=pyprojectr", "--cov-report=term" ]
+addopts = [ "-rfE", "--color=yes", "--cov=setuptools_scmx", "--cov-report=term" ]
 log_cli = true
 log_cli_level = "INFO"
 norecursedirs = [
@@ -125,3 +127,7 @@ labels = [
   { name = "rc", branches = [ "master", "main" ] },
   { name = "post", branches = [ "hotfix" ] },
 ]
+
+# scmx custom env scheme
+[tool.setuptools-scmx.env-schemes]
+custom = { version = "SCMX_VERSION_OVERRIDE" }
