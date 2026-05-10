@@ -43,4 +43,4 @@ def branch_scheme(version: ScmVersion, scmx_tool: ScmxTool) -> str:
     version_distance = env_scheme.get_build_number() or version.distance
 
     label = scmx_tool.branch_scheme.get_release_label(branch)
-    return f"{base_version}.{label}.{version_distance}"
+    return f"{base_version}{label}.{version_distance}"

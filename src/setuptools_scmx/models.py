@@ -1,4 +1,5 @@
 import os
+import re
 from typing import Literal
 
 import attrs
@@ -9,15 +10,23 @@ ScmxScheme = Literal["branch-scheme", "ci-scheme"]
 ScmxEnvScheme = Literal["jenkins", "gitlab", "github", "custom"]
 
 
-@attrs.define(auto_attribs=True)
+@attrs.define
 class ReleaseLabel:
     name: LabelName = attrs.field(default="rc")
-    branches: list[str] = attrs.field(default=["master", "main"])
+    branches: list[str] = attrs.field(factory=lambda: ["master", "main"])
 
-    def match(self, name: str | None) -> LabelName | None:
-        if name not in self.branches:
+    def match(self, branch_name: str | None) -> LabelName | None:
+        """
+        Checks if the given branch_name matches any of the patterns in self.branches.
+        If a match is found, returns the label name; otherwise, returns None.
+        Assumes `self.branches` can contain regular expression patterns.
+        """
+        if branch_name is None:
             return None
-        return self.name
+        # Iterate through branch patterns and return the label name on the first match.
+        if any(re.match(pattern, branch_name) for pattern in self.branches):
+            return self.name
+        return None
 
 
 @attrs.define(frozen=True)
@@ -27,20 +36,13 @@ class BranchScheme(BaseModel):
     def get_release_label(self, branch_name: str | None) -> LabelName | str:
         label = next((label for label in self.labels if label.match(branch_name)), None)
         if label:
-            return label.name
-        return branch_name.replace("/", "-").replace("_", "-") if branch_name else "detached"
-
-
-@attrs.define(frozen=True)
-class CiScheme(BaseModel):
-    version_env: str = attrs.field(default="SCMX_VERSION")
-    branch_env: str = attrs.field(default="SCMX_BRANCH")
-    build_number_env: str = attrs.field(default="SCMX_BUILD_NUMBER")
+            return f".{label.name}"
+        return f"+{branch_name.replace('/', '-').replace('_', '-')}" if branch_name else "+detached"
 
 
 @attrs.define(frozen=True)
 class EnvScheme:
-    version: str | None = None
+    version: str | None = "SCMX_VERSION_OVERRIDE"
     branch: str | None = None
     git_commit: str | None = None
     build_number: str | None = None
