@@ -1,7 +1,6 @@
 import pathlib
 
 from setuptools_scm.version import ScmVersion, guess_next_version
-
 from pyprojectr import pyproject
 
 from setuptools_scmx import ScmxTool
@@ -10,10 +9,16 @@ from setuptools_scmx import ScmxTool
 def version_scheme(version: ScmVersion) -> str:
     pyproj = pyproject.from_file(path=pathlib.Path("pyproject.toml"))
     scmx_tool = pyproj.get_tool_options("setuptools-scmx", ScmxTool)
+    print(scmx_tool)
+    if scmx_tool is None:
+        return guess_next_version(version)
+
+    if scmx_tool.scheme == "branch-scheme":
+        return branch_scheme(version, scmx_tool)
+    return guess_next_version(version)
 
 
-
-def branch_aware_scheme(version: ScmVersion) -> str:
+def branch_scheme(version: ScmVersion, scmx_tool: ScmxTool) -> str:
     """
     Versioning scheme:
     - Tags: Always exact (e.g., 1.2.3)
@@ -23,27 +28,8 @@ def branch_aware_scheme(version: ScmVersion) -> str:
     if version.exact:
         return version.format_with("{tag}")
 
-    base_version = guess_next_version(version.tag)
+    base_version = guess_next_version(version)
     branch = version.branch
 
-    if branch in ["main", "master"]:
-        return f"{base_version}.dev{version.distance}"
-
-    # Normalize branch name for PEP 440 compatibility if possible,
-    # or keep it descriptive for internal builds.
-    branch_name = branch.replace("/", "-").replace("_", "-") if branch else "detached"
-    return f"{base_version}.{branch_name}.{version.distance}"
-
-
-def jenkins_build_scheme(version: ScmVersion) -> str:
-    """
-    Specialized version of the branch-aware scheme for Jenkins environments.
-    """
-    return branch_aware_scheme(version)
-
-
-def ci_version_scheme(version: ScmVersion) -> str:
-    """
-    General CI version scheme.
-    """
-    return branch_aware_scheme(version)
+    label = scmx_tool.branch_scheme.get_release_label(branch)
+    return f"{base_version}.{label}.{version.distance}"
