@@ -1,15 +1,16 @@
+import os
 import pathlib
 
-from setuptools_scm.version import ScmVersion, guess_next_version
 from pyprojectr import pyproject
+from setuptools_scm.version import ScmVersion, guess_next_version
 
 from setuptools_scmx import ScmxTool
 
 
 def version_scheme(version: ScmVersion) -> str:
-    pyproj = pyproject.from_file(path=pathlib.Path("pyproject.toml"))
+    pyproject_path = os.getenv("SCMX_PYPROJECT_PATH", "pyproject.toml")
+    pyproj = pyproject.from_file(path=pathlib.Path(pyproject_path))
     scmx_tool = pyproj.get_tool_options("setuptools-scmx", ScmxTool)
-    print(scmx_tool)
     if scmx_tool is None:
         return guess_next_version(version)
 

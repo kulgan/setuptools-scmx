@@ -3,10 +3,9 @@ import pathlib
 from pyprojectr import pyproject
 
 from setuptools_scmx.models import ScmxTool
-from setuptools_scmx.schemes import version_scheme
+from setuptools_scmx.schemes import branch_scheme, version_scheme
 
-
-__all__ = ["ScmxTool", "version_scheme"]
+__all__ = ["ScmxTool", "branch_scheme", "version_scheme"]
 
 
 if __name__ == "__main__":
