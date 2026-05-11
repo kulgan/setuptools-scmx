@@ -61,4 +61,4 @@ def test_version_scheme_default_no_config(mock_version, tmp_path, monkeypatch):
     monkeypatch.setenv("SCMX_PYPROJECT_PATH", str(pp_path))
     mock_version.branch = "any-branch"  # Branch doesn't matter here, as scmx_tool is None
     result = version_scheme(mock_version)
-    assert result == "1.0.1"
+    assert result == "1.0.1+any-branch.5"
