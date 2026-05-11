@@ -13,10 +13,9 @@ logger = logging.getLogger(__name__)
 def version_scheme(version: ScmVersion) -> str:
     pyproject_path = os.getenv("SCMX_PYPROJECT_PATH", "pyproject.toml")
     pyproj = pyproject.from_file(path=pathlib.Path(pyproject_path))
-    scmx_tool = pyproj.get_tool_options("setuptools-scmx", ScmxTool)
-    if scmx_tool is None:
-        return guess_next_version(version)
 
+    # build default scmx tool if not found in pyproject.toml
+    scmx_tool = pyproj.get_tool_options("setuptools-scmx", ScmxTool) or ScmxTool()
     if scmx_tool.scheme == "branch-scheme":
         return branch_scheme(version, scmx_tool)
     return guess_next_version(version)
