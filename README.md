@@ -11,6 +11,7 @@ This package enhances the standard `setuptools-scm` functionality by introducing
 -   **Custom Versioning Schemes**: Define how your project's version is determined based on its Git state.
 -   **Branch-Aware Versioning**: Differentiate version numbers based on the current Git branch (e.g., `main`, `develop`, `feature/xyz`).
 -   **Exact Tag Versions**: Ensures that builds from Git tags always result in the exact tag version, without any additional suffixes.
+-   **Environment Variable Overrides**: Allows specifying a version directly via an environment variable, useful for specific CI/CD scenarios.
 -   **`pyproject.toml` Integration**: All custom versioning logic and configurations are managed declaratively in your `pyproject.toml` file, leveraging `pyprojectr` for robust parsing.
 
 This allows for consistent and predictable versioning across different development stages and CI environments, making it easier to track builds and releases.
@@ -28,7 +29,8 @@ First, ensure `setuptools-scmx` and its dependencies are installed. You typicall
 [build-system]
 requires = [
     "setuptools>=80",
-    "setuptools-scmx", # Add setuptools-scmx here
+    "setuptools-scm[toml]", # Ensure setuptools-scm[toml] is included
+    "setuptools-scmx",     # Add setuptools-scmx here
 ]
 build-backend = "setuptools.build_meta"
 
@@ -45,13 +47,13 @@ In your `pyproject.toml`, configure `setuptools-scm` to use a custom `version_sc
 ```toml
 # pyproject.toml
 [tool.setuptools_scm]
-version_scheme = "setuptools_scmx.version_scheme" # Use the custom scheme
+version_scheme = "setuptools_scmx:version_scheme" # Use the custom scheme
 local_scheme = "no-local-version" # Or 'node-and-date' as per your preference
 ```
 
 ### 3. Configure `setuptools-scmx`
 
-Define your custom branch-aware versioning rules under `[tool.setuptools-scmx]`.
+Define your custom branch-aware versioning rules and other schemes under `[tool.setuptools-scmx]`.
 
 ```toml
 # pyproject.toml
@@ -65,17 +67,30 @@ labels = [
   # The 'develop' branch will get a '.dev' label
   { name = "dev", branches = ["develop"] },
   # Branches starting with 'feature/' will get an '.alpha' label
-  { name = "alpha", branches = ["feature/"] }, # Example: feature/new-feature -> 1.2.3.alpha.4
+  { name = "alpha", branches = ["feature/.*"] }, # Example: feature/new-feature -> 1.2.3.alpha.4
   # The 'hotfix' branch will get a '.post' label
   { name = "post", branches = ["hotfix"] },
 ]
+
+# You can also define environment variable based schemes
+[tool.setuptools-scmx.env-schemes]
+# If the environment variable SCMX_VERSION_OVERRIDE is set, its value will be used as the version.
+custom = { version = "SCMX_VERSION_OVERRIDE" }
 ```
 
 #### Explanation of `[tool.setuptools-scmx.branch-scheme.labels]`
 
 Each entry in the `labels` list defines a rule:
 -   `name`: The string to append to the version number (e.g., `rc`, `dev`, `alpha`, `post`). This should generally conform to [PEP 440](https://peps.python.org/pep-0440/) pre-release identifiers.
--   `branches`: A list of branch names. If the current Git branch matches any of these, the corresponding `label` will be used.
+-   `branches`: A list of branch name regexes or exact branch names to match. If the current Git branch matches any of these, the corresponding `label` will be used.
+
+*Note: The `setuptools-scmx` project's own `pyproject.toml` uses a simpler `labels` configuration for demonstration purposes.*
+
+#### Explanation of `[tool.setuptools-scmx.env-schemes]`
+
+This section allows you to define version schemes that are activated by the presence and value of environment variables.
+-   `custom`: This is a user-defined name for the scheme.
+-   `version = "ENV_VAR_NAME"`: If the environment variable `ENV_VAR_NAME` is set, its value will be used as the project's version, overriding any Git-based versioning. This is particularly useful in CI/CD pipelines where you might want to force a specific build version.
 
 #### Versioning Behavior Examples:
 
@@ -98,5 +113,8 @@ Assuming the last tag is `1.0.0` and there are 5 commits since the tag (`distanc
 
 -   **On an unmapped branch (e.g., `bugfix/issue-123`)**:
     -   Version: `1.0.1.bugfix-issue-123.5` (next version `1.0.1`, normalized branch name as label, distance `5`)
+
+-   **With `SCMX_VERSION_OVERRIDE="2.0.0-beta.1"` environment variable set**:
+    -   Version: `2.0.0-beta.1` (overrides Git-based versioning)
 
 This setup provides a powerful and flexible way to manage your project's versioning in a CI/CD environment.
